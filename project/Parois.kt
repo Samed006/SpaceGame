@@ -10,10 +10,21 @@ class Parois (x1: Float, y1: Float, x2: Float, y2: Float) {
     val paint = Paint()
 
     fun draw(canvas: Canvas){
-        paint.color = Color.GREEN
+        paint.color = Color.CYAN
 
         canvas.drawRect(r,paint)
 
+    }
+
+    fun gereEnemies( e :Enemies){
+        if (RectF.intersects(r,e.enemies)) {
+            if (r.width() > r.height()) {
+                e.changeDirection (true)
+            }
+            else {
+                e.changeDirection(false)
+            }
+        }
     }
 
 

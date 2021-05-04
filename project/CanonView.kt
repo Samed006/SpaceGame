@@ -27,9 +27,10 @@ class CanonView @JvmOverloads constructor (context: Context, attributes: Attribu
     lateinit var thread: Thread
     val ship = Ship(6f, 3f, 3f, 3f, this)
     val balle = ArrayList<Balle>()
-    val enemies: Enemies = Enemies(1f, 1f, 1f, 30f, 1f, this)
     var totalElapsedTime = 0.0
     var i: Int = 0
+    lateinit var lesParois : Array<Parois>
+    var lesEnemies = arrayListOf<Enemies>(Enemies(30f,800f,80f,this),Enemies(800f,30f,80f,this),Enemies(30f,30f,80f,this),Enemies(200f,200f,80f,this),Enemies(400f,400f,80f,this))
 
     init {
         backgroundPaint.color = Color.GRAY
@@ -52,13 +53,16 @@ class CanonView @JvmOverloads constructor (context: Context, attributes: Attribu
             b.canonballRadius = (w.toFloat())
             b.canonBallVitesse = (w.toFloat())
         }
-        //Initialise les cibles
-        enemies.width = (h/ 24f)
-        enemies.x1 = (w/ 8f)
-        enemies.y1 = (h /8f)
-        enemies.cote = (w * 7  / 8f)
-        enemies.enemiesSpeed = (-w * 3 / 4f)
-        enemies.setRect()
+        //Initialise les enemies
+        for(b in lesEnemies){
+            b.setRect()
+        }
+        // Initilalise les parois
+        lesParois = arrayOf(Parois(5f,5f,25f,h.toFloat()),Parois(5f, 5f, w.toFloat(), 25f),
+                Parois(5f, h.toFloat()-25f, w.toFloat(), h.toFloat() ),
+                Parois(w.toFloat()-25f, 5f, w.toFloat() , h.toFloat()))
+
+
     }
 
     // Function thread qui sont obligatoirement presente
@@ -110,7 +114,16 @@ class CanonView @JvmOverloads constructor (context: Context, attributes: Attribu
                     }
                 }
             }
-            enemies.draw(canvas)
+            for (p in lesParois){
+                p.draw(canvas)
+            }
+            for(t in lesEnemies){
+                if(!t.enemiesHit) {
+                    t.draw(canvas)
+                    t.bouge(lesParois,lesEnemies)
+                }
+            }
+
             holder.unlockCanvasAndPost(canvas)
         }
     }
@@ -133,14 +146,15 @@ class CanonView @JvmOverloads constructor (context: Context, attributes: Attribu
     }
 
     fun fireball(e: MotionEvent) {
-        balle.add(Balle(this, enemies))
+
+        balle.add(Balle(this, lesEnemies))
         balle.get(i).launch(e.x, e.y)
         i += 1
     }
 
     fun updatePositions(elpsTimeMS: Double) {
         val interval = elpsTimeMS / 1000.0
-        enemies.update(interval)
+       // enemies.update(interval)
 
         if (balle.size != 0) {
             for (b in balle) {

@@ -5,7 +5,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PointF
 
-class Balle(var view: CanonView, val enemies: Enemies) {
+class Balle(var view: CanonView, val enemies: ArrayList<Enemies>) {
     var canonball = PointF()
     var canonBallVitesse = 300f
     var canonBallVitesseX = 0f
@@ -31,18 +31,22 @@ class Balle(var view: CanonView, val enemies: Enemies) {
             if (canonball.y + canonballRadius > view.screenHeight
                     || canonball.y - canonballRadius < 0) {
                 canonballOnScreen = false
+            }else{
+            for (t in enemies) {
+                if (canonball.x - canonballRadius > t.enemies.left
+                        && canonball.x + canonballRadius > t.enemies.right
+                        && canonball.y + canonballRadius > t.enemies.top
+                        && canonball.y - canonballRadius < t.enemies.bottom) {
+                     //t.detectChoc(this)
+                }
             }
-            else if ( canonball.y+canonballRadius>enemies.enemies.bottom
-                    && canonball.y-canonballRadius<enemies.enemies.top) {
-                enemies.detectChoc(this)
-            }
+        }}}
+        fun resetCanonBall() {
+            canonballOnScreen = false
         }
+
+        fun draw(canvas: Canvas) {
+            canvas.drawCircle(canonball.x, canonball.y, canonballRadius,
+                    canonballPaint)
         }
-    fun resetCanonBall(){
-        canonballOnScreen = false
     }
-    fun draw(canvas: Canvas) {
-        canvas.drawCircle(canonball.x, canonball.y, canonballRadius,
-                canonballPaint)
-    }
-}
